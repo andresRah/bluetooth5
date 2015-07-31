@@ -7,6 +7,8 @@
     <author href="https://github.com/don">
         Don Coleman
     </author>
+
+    <gap:plugin name="com.megster.cordova.bluetoothserial" version="0.3.3" />
     
     <content src="index.html" />
     <access origin="*" />
