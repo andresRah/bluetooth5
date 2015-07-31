@@ -14,8 +14,9 @@ var app = {
     Application constructor
  */
     initialize: function() {
-        this.bindEvents();
+        //this.bindEvents();
         alert("Starting SimpleSerial app");
+        this.onDeviceReady();
     },
 /*
     bind any events that are required on startup to listeners:
@@ -32,6 +33,7 @@ var app = {
         // check to see if Bluetooth is turned on.
         // this function is called only
         //if isEnabled(), below, returns success:
+        alert("Starting SimpleSerial app1");
         var listPorts = function() {
             // list the available BT ports:
             bluetoothSerial.list(
