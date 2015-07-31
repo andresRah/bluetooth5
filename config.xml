@@ -23,6 +23,7 @@
    <gap:plugin name="org.apache.cordova.geolocation" version="0.3.10" />
    <gap:plugin name="org.apache.cordova.contacts" version="0.2.13" />
    <gap:plugin name="org.apache.cordova.media" version="0.2.13" />
+   <gap:plugin name="com.megster.cordova.bluetoothserial" version="0.3.3" /> 
 
    <preference name="permissions" value="none"/>
 
