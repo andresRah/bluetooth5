@@ -1,125 +1,152 @@
-/* jshint quotmark: false, unused: vars, browser: true */
-/* global cordova, console, $, bluetoothSerial, _, refreshButton, deviceList, previewColor, red, green, blue, disconnectButton, connectionScreen, colorScreen, rgbText, messageDiv */
-'use strict';
+/*
+    SimpleSerial index.js
+    Created 7 May 2013
+    Modified 9 May 2013
+    by Tom Igoe
+*/
+
 
 var app = {
+    macAddress: "00:15:FF:F3:4F:69",  // get your mac address from bluetoothSerial.list
+    chars: "",
+
+/*
+    Application constructor
+ */
     initialize: function() {
-        this.bind();
+        this.bindEvents();
+        console.log("Starting SimpleSerial app");
     },
-    bind: function() {
-        document.addEventListener('deviceready', this.deviceready, false);
-        colorScreen.hidden = true;
+/*
+    bind any events that are required on startup to listeners:
+*/
+    bindEvents: function() {
+        document.addEventListener('deviceready', this.onDeviceReady, false);
+        connectButton.addEventListener('touchend', app.manageConnection, false);
     },
-    deviceready: function() {
 
-        // wire buttons to functions
-        deviceList.ontouchstart = app.connect; // assume not scrolling
-        refreshButton.ontouchstart = app.list;
-        disconnectButton.ontouchstart = app.disconnect;
-
-        // throttle changes
-        var throttledOnColorChange = _.throttle(app.onColorChange, 200);
-        $('input').on('change', throttledOnColorChange);
-        
-        app.list();
-    },
-    list: function(event) {
-        alert("heyy");
-        deviceList.firstChild.innerHTML = "Discovering...";
-        app.setStatus("Looking for Bluetooth Devices...");
-        
-        bluetoothSerial.list(app.ondevicelist, app.generateFailureFunction("List Failed"));
-    },
-    connect: function (e) {
-        app.setStatus("Connecting...");
-        var device = e.target.getAttribute('deviceId');
-        alert("Requesting connection to " + device);
-        bluetoothSerial.connect(device, app.onconnect, app.ondisconnect);        
-    },
-    disconnect: function(event) {
-        if (event) {
-            event.preventDefault();
+/*
+    this runs when the device is ready for user interaction:
+*/
+    onDeviceReady: function() {
+        // check to see if Bluetooth is turned on.
+        // this function is called only
+        //if isEnabled(), below, returns success:
+        var listPorts = function() {
+            // list the available BT ports:
+            bluetoothSerial.list(
+                function(results) {
+                    app.display(JSON.stringify(results));
+                },
+                function(error) {
+                    app.display(JSON.stringify(error));
+                }
+            );
         }
 
-        app.setStatus("Disconnecting...");
-        bluetoothSerial.disconnect(app.ondisconnect);
-    },
-    onconnect: function() {
-        connectionScreen.hidden = true;
-        colorScreen.hidden = false;
-        app.setStatus("Connected.");
-    },
-    ondisconnect: function() {
-        connectionScreen.hidden = false;
-        colorScreen.hidden = true;
-        app.setStatus("Disconnected.");
-    },
-    onColorChange: function (evt) {
-        var c = app.getColor();
-        rgbText.innerText = c;
-        previewColor.style.backgroundColor = "rgb(" + c + ")";
-        app.sendToArduino(c);
-    },
-    getColor: function () {
-        var color = [];
-        color.push(red.value);
-        color.push(green.value);
-        color.push(blue.value);
-        return color.join(',');
-    },
-    sendToArduino: function(c) {
-        bluetoothSerial.write("c" + c + "\n");
-    },
-    timeoutId: 0,
-    setStatus: function(status) {
-        if (app.timeoutId) {
-            clearTimeout(app.timeoutId);
+        // if isEnabled returns failure, this function is called:
+        var notEnabled = function() {
+            app.display("Bluetooth is not enabled.")
         }
-        messageDiv.innerText = status;
-        app.timeoutId = setTimeout(function() { messageDiv.innerText = ""; }, 4000);
+
+         // check if Bluetooth is on:
+        bluetoothSerial.isEnabled(
+            listPorts,
+            notEnabled
+        );
     },
-    ondevicelist: function(devices) {
-        var listItem, deviceId;
+/*
+    Connects if not connected, and disconnects if connected:
+*/
+    manageConnection: function() {
 
-        // remove existing devices
-        deviceList.innerHTML = "";
-        app.setStatus("");
-        
-        devices.forEach(function(device) {
-            listItem = document.createElement('li');
-            listItem.className = "topcoat-list__item";
-            if (device.hasOwnProperty("uuid")) { // TODO https://github.com/don/BluetoothSerial/issues/5
-                deviceId = device.uuid;
-            } else if (device.hasOwnProperty("address")) {
-                deviceId = device.address;
-            } else {
-                deviceId = "ERROR " + JSON.stringify(device);
-            }
-            listItem.setAttribute('deviceId', device.address);            
-            listItem.innerHTML = device.name + "<br/><i>" + deviceId + "</i>";
-            deviceList.appendChild(listItem);
-        });
-
-        if (devices.length === 0) {
-            
-            if (cordova.platformId === "ios") { // BLE
-                app.setStatus("No Bluetooth Peripherals Discovered.");
-            } else { // Android
-                app.setStatus("Please Pair a Bluetooth Device.");
-            }
-
-        } else {
-            app.setStatus("Found " + devices.length + " device" + (devices.length === 1 ? "." : "s."));
-        }
-    },
-    generateFailureFunction: function(message) {
-        var func = function(reason) {
-            var details = "";
-            if (reason) {
-                details += ": " + JSON.stringify(reason);
-            }
-            app.setStatus(message + details);
+        // connect() will get called only if isConnected() (below)
+        // returns failure. In other words, if not connected, then connect:
+        var connect = function () {
+            // if not connected, do this:
+            // clear the screen and display an attempt to connect
+            app.clear();
+            app.display("Attempting to connect. " +
+                "Make sure the serial port is open on the target device.");
+            // attempt to connect:
+            bluetoothSerial.connect(
+                app.macAddress,  // device to connect to
+                app.openPort,    // start listening if you succeed
+                app.showError    // show the error if you fail
+            );
         };
-        return func;
+
+        // disconnect() will get called only if isConnected() (below)
+        // returns success  In other words, if  connected, then disconnect:
+        var disconnect = function () {
+            app.display("attempting to disconnect");
+            // if connected, do this:
+            bluetoothSerial.disconnect(
+                app.closePort,     // stop listening to the port
+                app.showError      // show the error if you fail
+            );
+        };
+
+        // here's the real action of the manageConnection function:
+        bluetoothSerial.isConnected(disconnect, connect);
+    },
+/*
+    subscribes to a Bluetooth serial listener for newline
+    and changes the button:
+*/
+    openPort: function() {
+        // if you get a good Bluetooth serial connection:
+        app.display("Connected to: " + app.macAddress);
+        // change the button's name:
+        connectButton.innerHTML = "Disconnect";
+        // set up a listener to listen for newlines
+        // and display any new data that's come in since
+        // the last newline:
+        bluetoothSerial.subscribe('\n', function (data) {
+            app.clear();
+            app.display(data);
+        });
+    },
+
+/*
+    unsubscribes from any Bluetooth serial listener and changes the button:
+*/
+    closePort: function() {
+        // if you get a good Bluetooth serial connection:
+        app.display("Disconnected from: " + app.macAddress);
+        // change the button's name:
+        connectButton.innerHTML = "Connect";
+        // unsubscribe from listening:
+        bluetoothSerial.unsubscribe(
+                function (data) {
+                    app.display(data);
+                },
+                app.showError
+        );
+    },
+/*
+    appends @error to the message div:
+*/
+    showError: function(error) {
+        app.display(error);
+    },
+
+/*
+    appends @message to the message div:
+*/
+    display: function(message) {
+        var display = document.getElementById("message"), // the message div
+            lineBreak = document.createElement("br"),     // a line break
+            label = document.createTextNode(message);     // create the label
+
+        display.appendChild(lineBreak);          // add a line break
+        display.appendChild(label);              // add the message node
+    },
+/*
+    clears the message div:
+*/
+    clear: function() {
+        var display = document.getElementById("message");
+        display.innerHTML = "";
     }
-};
+};      // end of app
