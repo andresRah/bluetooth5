@@ -24,6 +24,7 @@ var app = {
         app.list();
     },
     list: function(event) {
+        alert("heyy");
         deviceList.firstChild.innerHTML = "Discovering...";
         app.setStatus("Looking for Bluetooth Devices...");
         
@@ -32,7 +33,7 @@ var app = {
     connect: function (e) {
         app.setStatus("Connecting...");
         var device = e.target.getAttribute('deviceId');
-        console.log("Requesting connection to " + device);
+        alert("Requesting connection to " + device);
         bluetoothSerial.connect(device, app.onconnect, app.ondisconnect);        
     },
     disconnect: function(event) {
