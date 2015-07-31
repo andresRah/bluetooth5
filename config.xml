@@ -8,10 +8,9 @@
         Don Coleman
     </author>
 
-    <gap:plugin name="com.megster.cordova.bluetoothserial" version="0.3.3" />
-    
     <content src="index.html" />
     <access origin="*" />
     <preference name="fullscreen" value="false" />
-    <preference name="DisallowOverscroll" value="true" />        
+    <preference name="DisallowOverscroll" value="true" />    
+    <gap:plugin name="com.megster.cordova.bluetoothserial" version="0.3.3" />    
 </widget>
