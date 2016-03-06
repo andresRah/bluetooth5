@@ -1,9 +1,9 @@
 <html>
 <head>
 	<title>Enciende led</title>
-    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" charset="utf-8"></script>
+    <link rel="stylesheet" type="text/css" href="js/bootstrap.min.css">
+    <script type="text/javascript" src="js/jquery.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js" charset="utf-8"></script>
 </head>
 <body>
        <div>
@@ -25,7 +25,7 @@
 	  			</div>
 			</div>
        </div>
-	   <script type="text/javascript" src="cordova.js"></script>
+	   
        <script type="text/javascript">       
        		$(document).ready(function() {  
 
@@ -56,7 +56,7 @@
     				   navigator.notification.alert("Apagado OK",{},"Apagado OK");		
   					},
   					error: function(){
-  						navigator.notification.alert("Error Apagado",{},"Error Apagado");		
+  					   navigator.notification.alert("Error Apagado",{},"Error Apagado");		
   					}
 				});
 			});
