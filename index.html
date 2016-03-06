@@ -1,20 +1,58 @@
-<!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <meta name="format-detection" content="telephone=no" />
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
-        <link rel="stylesheet" type="text/css" href="css/index.css" />
-        <title>Bluetooth Count</title>
-    </head>
-    <body>
-        <h1>Bluetooth Counter</h1>
-        <div id="counter">...</div>
-        <div id="statusDiv"></div>
-        <script type="text/javascript" src="cordova.js"></script>
-        <script type="text/javascript" src="js/index.js"></script>
-        <script type="text/javascript">
-            app.initialize();
-        </script>
-    </body>
+<head>
+	<title>Enciende led</title>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" charset="utf-8"></script>
+</head>
+<body>
+       <div>
+			<div class="container-fluid">
+				<h2>Encendido de led</h2>
+				<br><br>
+	  			<div class="row">
+	  				 <div class="col-md-2 col-md-offset-5">
+	  				 	<button type="button" class="btn btn-success" id="btn_on">Encender</button>
+	  				 </div>
+				</div>
+				<br>
+				<br>
+				<br>
+				<div class="row">
+					<div class="col-md-2 col-md-offset-5">
+	  				<button type="button" class="btn btn-primary" id="btn_off">Apagar</button>
+	  				</div>
+	  			</div>
+			</div>
+       </div>
+	   <script type="text/javascript" src="cordova.js"></script>
+       <script type="text/javascript">       
+       		$(document).ready(function() {  
+
+       		var urlXbee ="https://xbeewifi.herokuapp.com/api/devices/00000000-00000000-00409DFF-FF5E0D8D/io";	
+			
+			$("#btn_on").on('click', function(evt){
+				$.ajax({
+  					url: urlXbee,
+  					type: 'PUT',
+  					data: "DIO/9=1",
+  					success: function(data) {
+    					alert('Encendido OK');
+  					}
+				});
+			});
+
+			$("#btn_off").on('click', function(evt){
+			   	$.ajax({
+  					url: urlXbee,
+  					type: 'PUT',
+  					data: "DIO/9=0",
+  					success: function(data) {
+    				   alert('Apagado OK');
+  					}
+				});
+			});
+		});
+       </script>
+</body>
 </html>
