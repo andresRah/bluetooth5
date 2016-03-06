@@ -38,6 +38,9 @@
   					data: "DIO/9=1",
   					success: function(data) {
     					alert('Encendido OK');
+  					},
+  					error: function(){
+  						alert("Error Encendido");
   					}
 				});
 			});
@@ -49,6 +52,9 @@
   					data: "DIO/9=0",
   					success: function(data) {
     				   alert('Apagado OK');
+  					},
+  					error: function(){
+						alert("Error Apagado");
   					}
 				});
 			});
