@@ -6,7 +6,7 @@
         id        = "com.phonegap.LearnApp"
         version   = "1.0.0">
 
-    <name>PruebaBluetooth</name>
+    <name>Encendido led</name>
 
     <description>
       Aplicación de aprendizaje Phonegap 2015. Configuración de brujula, bluetooth, NFC.
@@ -17,7 +17,8 @@
     </author> 
 
    <preference name="phonegap-version" value="3.7.0"/> 
-
+   
+   <gap:plugin name="org.apache.cordova.dialogs" version="0.2.10" />
    <preference name="permissions" value="none"/>
 
     <!-- Customize your app and platform with the preference element. -->
