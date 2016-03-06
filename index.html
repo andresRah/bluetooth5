@@ -28,7 +28,9 @@
 	   <script type="text/javascript" src="cordova.js"></script>
        <script type="text/javascript">       
        		$(document).ready(function() {  
-				alert('Doc Listo');
+
+			navigator.notification.alert("Doc listo!",{},"Doc listo!");		
+
        		var urlXbee ="https://xbeewifi.herokuapp.com/api/devices/00000000-00000000-00409DFF-FF5E0D8D/io";	
 			
 			$("#btn_on").on('click', function(evt){
@@ -37,10 +39,10 @@
   					type: 'PUT',
   					data: "DIO/9=1",
   					success: function(data) {
-    					alert('Encendido OK');
+    					navigator.notification.alert("Encendido OK",{},"Encendido OK");		
   					},
   					error: function(){
-  						alert("Error Encendido");
+  						navigator.notification.alert("Error Encendido",{},"Error Encendido");		
   					}
 				});
 			});
@@ -51,10 +53,10 @@
   					type: 'PUT',
   					data: "DIO/9=0",
   					success: function(data) {
-    				   alert('Apagado OK');
+    				   navigator.notification.alert("Apagado OK",{},"Apagado OK");		
   					},
   					error: function(){
-						alert("Error Apagado");
+  						navigator.notification.alert("Error Apagado",{},"Error Apagado");		
   					}
 				});
 			});
